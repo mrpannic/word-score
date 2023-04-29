@@ -39,7 +39,7 @@ class GithubSourceService implements SourceServiceInterface {
 
 
         return Word::create([
-            'word' => $word,
+            'term' => $word,
             'positive_count' => $positiveCount,
             'negative_count' => $negativeCount,
             'source' => Word::SOURCE_GITHUB
