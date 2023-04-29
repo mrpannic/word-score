@@ -22,3 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group([ "prefix" => "v1" ], function() {
     Route::get('score/{word}', [ WordScoreController::class, 'show' ]);
 });
+
+Route::group([ "prefix" => "v2" ], function() {
+    Route::get('scores', [ WordScoreController::class, 'index' ]);
+});
