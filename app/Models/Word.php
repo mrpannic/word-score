@@ -9,6 +9,8 @@ class Word extends Model
 {
     use HasFactory;
 
+    const SOURCE_GITHUB = 1;
+
     protected $fillable = [
         'word',
         'positive_count',
