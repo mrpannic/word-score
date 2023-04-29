@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('words', function (Blueprint $table) {
             $table->id();
-            $table->string('word');
+            $table->string('term');
             $table->unsignedInteger('positive_count');
             $table->unsignedInteger('negative_count');
             $table->unsignedTinyInteger('source');
