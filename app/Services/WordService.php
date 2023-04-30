@@ -9,7 +9,7 @@ use Exception;
 class WordService {
     private SourceServiceInterface $sourceService;
 
-    public function setSourceService($source) {
+    public function setSourceService($source): WordService {
         if ($source == Word::SOURCE_GITHUB) {
             $this->sourceService = new GithubSourceService();
         }
@@ -22,15 +22,17 @@ class WordService {
         return $this;
     }
 
-    public function getWord($word) {
+    public function getWord($word): Word {
         $wordStatistic = Word::where('term', $word)->first();
 
         if($wordStatistic) return $wordStatistic;
 
-        return $this->sourceService->getWordStatistic($word);
-    }
-
-    public function getSourceNameAttribute() {
-
+        $wordStatistic = $this->sourceService->getWordStatistic($word);
+        return Word::create([
+            'term' => $word,
+            'positive_count' => $wordStatistic['positiveCount'],
+            'negative_count' => $wordStatistic['negativeCount'],
+            'source' => Word::SOURCE_GITHUB
+        ]);
     }
 }

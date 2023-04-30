@@ -5,12 +5,9 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Interfaces\SourceServiceInterface;
 use App\Services\GithubSourceService;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class GithubSourceServiceTest extends TestCase
 {
-    use DatabaseMigrations;
-
     public SourceServiceInterface $sourceService;
 
     public function setUp(): void
@@ -20,10 +17,10 @@ class GithubSourceServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_should_create_a_word_statistic(): void
+    public function it_should_return_word_count_breakdown(): void
     {
-        $this->assertTrue(true);
         $result = $this->sourceService->getWordStatistic("php");
-        $this->assertNotNull($result->toArray());
+        $this->assertArrayHasKey('positiveCount', $result);
+        $this->assertArrayHasKey('negativeCount', $result);
     }
 }

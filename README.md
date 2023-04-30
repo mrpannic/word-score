@@ -13,13 +13,16 @@ This project should return score based on the word that has been passed to the e
         DB_DATABASE=word_score
         DB_USERNAME=root
         DB_PASSWORD=some_password
+
+    // add this if you want to allow the search to go through your private repos
+        GITHUB_TOKEN=...... 
 ```
 2. You can use the `canoe` script to run docker containers and everything what you need for this project. Basic commands:
 ``` 
     ./canoe up       -- runs the build and creates containers
     ./canoe down     -- stops the containers
     ./canoe migrate  -- migrates the app container database
-    ./canoe backup   -- backups the database into you're local docker-compose/mysql/backup.sql path
+    ./canoe backup   -- backups the database into you're local docker-compose/mysql/backup.sql path but that will be done when running ./canoe down
 ```
 3. Run `./canoe up` to start docker containers and also run `./canoe migrate` but if you are having connection errors please first check if you have set up the .env variables and if you still have the connection error then wait a bit for mysql service to start. You can check that with `docker logs db`
 4. Run the following for setting up the `laravel/passport` for oauth2 and generate clients
@@ -30,6 +33,15 @@ For detailed usage of `laravel/passport` you can take a look at the official lar
 
 5. (optional) If you are like me and you want to tinker a bit with the system and set everyting up by yourself you could use `laravel/valet` package.
 You will be needing `homebrew`, `php@8.1`, `composer` and `mysql`. Here is the official [documentation](https://laravel.com/docs/10.x/valet#installation)
+6. (optional) If you are not using any of these you will need to run the following in root folder of project
+```
+    composer install
+    cp .env.example .env
+    php artisan key:generate
+    php artisan passport:install
+    // before this set up the .env similarly like it was done in the 1. step
+    php artisan migrate
+```
 
 ## Routes
 
@@ -96,7 +108,7 @@ You will be needing `homebrew`, `php@8.1`, `composer` and `mysql`. Here is the o
     "path": "http://localhost:8000/api/v2/scores",
     "per_page": 15,
     "to": 1,
-    "total": 1
+    "total": 2
   }
 }
 ```

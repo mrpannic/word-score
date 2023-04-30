@@ -3,5 +3,5 @@
 namespace App\Interfaces;
 
 interface SourceServiceInterface {
-    public function getWordStatistic($word);
+    public function getWordStatistic($word): array;
 }
