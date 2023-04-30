@@ -1,0 +1,46 @@
+#!/bin/bash
+
+backup_container_db() {
+    echo "Backing up the database..."
+    docker exec db mysqldump -u root -psecret word_score > ./docker-compose/mysql/backup.sql
+}
+
+docker_up() {
+    echo "Building..."
+    docker-compose build
+    echo "Starting..."
+    docker-compose up -d
+    echo "Started!"
+    echo "Running composer install..."
+    docker exec app composer install
+}
+
+docker_down() {
+    backup_container_db
+    sleep 1
+    docker-compose down
+}
+
+migrate_db() {
+    docker exec app php artisan migrate
+}
+
+case $1 in
+    "up")
+        echo "Starting containers"
+        docker_up
+        ;;
+    "down")
+        echo "Stopping containers"
+        docker_down
+        ;;
+    "backup")
+        backup_container_db
+        ;;
+    "migrate")
+        migrate_db
+        ;;
+    *)
+        echo "Unknown command"
+        ;;
+esac
