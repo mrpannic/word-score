@@ -2,6 +2,10 @@
 
 backup_container_db() {
     echo "Backing up the database..."
+    FOLDER=./docker-compose/mysql
+    if [[ ! -d "$FOLDER" ]]; then
+        mkdir ./docker-compose/mysql
+    fi
     docker exec db mysqldump -u root -psecret word_score > ./docker-compose/mysql/backup.sql
 }
 
