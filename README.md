@@ -45,6 +45,8 @@ You will be needing `homebrew`, `php@8.1`, `composer` and `mysql`. Here is the o
 
 ## Routes
 
+- You can access the app from http://localhost:8000 if you are running the app from docker 
+
 | Request    | Endpoint               | Description            | Query Params       |
 | ---------- | ---------------------- | ---------------------- | ------------------ |
 | GET        | /api/v1/score/{word}   | Get a word score       | source(required)   |
