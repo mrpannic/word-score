@@ -1,66 +1,112 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Introduction
+This project should return score based on the word that has been passed to the endpoint and return the score for that specific word by appending `rocks` and `sucks` as positive and negative count respectively by some source. For now we have the source Github but other source can be added.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Setup
 
-## About Laravel
+1. Set up your env
+```
+    cp .env.example .env
+    // you will have to setup .env
+    // docker based .env
+        DB_HOST=db
+        DB_PORT=3306
+        DB_DATABASE=word_score
+        DB_USERNAME=root
+        DB_PASSWORD=some_password
+```
+2. You can use the `canoe` script to run docker containers and everything what you need for this project. Basic commands:
+``` 
+    ./canoe up       -- runs the build and creates containers
+    ./canoe down     -- stops the containers
+    ./canoe migrate  -- migrates the app container database
+    ./canoe backup   -- backups the database into you're local docker-compose/mysql/backup.sql path
+```
+3. Run `./canoe up` to start docker containers and also run `./canoe migrate` but if you are having connection errors please first check if you have set up the .env variables and if you still have the connection error then wait a bit for mysql service to start. You can check that with `docker logs db`
+4. Run the following for setting up the `laravel/passport` for oauth2 and generate clients
+```
+    docker exec app php artisan passport:install
+```
+For detailed usage of `laravel/passport` you can take a look at the official laravel [documentation](https://laravel.com/docs/10.x/passport#clients-json-api)
+5. (optional) If you are like me and you want to tinker a bit with the system and set everyting up by yourself you could use `laravel/valet` package.
+You will be needing `homebrew`, `php@8.1`, `composer` and `mysql`. Here is the official [documentation](https://laravel.com/docs/10.x/valet#installation)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Routes
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Request    | Endpoint               | Description            | Query Params       |
+| ---------- | ---------------------- | ---------------------- | ------------------ |
+| GET        | /api/v1/score/{word}   | Get a word score       | source(required)   |
+| GET        | /api/v2/scores         | Get all scores         | /                  |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Response Examples
+1. `GET /api/v1/score/php?source=1` - `source=1` idicates that we will get it from github and `php` is the word we are searching on github
+- Response: 
+```
+{
+  "data": {
+    "term": "php",
+    "score": 4.19,
+    "source": "GitHub"
+  }
+}
+```
+2. `GET /api/v2/scores`
+- Response:
+```
+{
+  "data": [
+    {
+      "term": "php",
+      "score": 4.19,
+      "source": "GitHub"
+    },
+    {
+      "term": "windows",
+      "score": 4.28,
+      "source": "GitHub"
+    }
+  ],
+  "links": {
+    "first": "http://localhost:8000/api/v2/scores?page=1",
+    "last": "http://localhost:8000/api/v2/scores?page=1",
+    "prev": null,
+    "next": null
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 1,
+    "links": [
+      {
+        "url": null,
+        "label": "&laquo; Previous",
+        "active": false
+      },
+      {
+        "url": "http://localhost:8000/api/v2/scores?page=1",
+        "label": "1",
+        "active": true
+      },
+      {
+        "url": null,
+        "label": "Next &raquo;",
+        "active": false
+      }
+    ],
+    "path": "http://localhost:8000/api/v2/scores",
+    "per_page": 15,
+    "to": 1,
+    "total": 1
+  }
+}
+```
 
-## Learning Laravel
+## Further development
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+If you wish to add new sources you would need to add a new service class for searching and implement the required methods in it. You need to implement `SourcServiceInterface`
+and add new constant inside `App\Models\Word.php` and afterwords you will have to add a new source name `App\Models\Word::getSourceNameAttribute()` 
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tests
 
-## Laravel Sponsors
+You can run tests by running `docker exec app php artisan test` or through `./vendor/bin/phpunit tests/...`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
