@@ -28,4 +28,12 @@ class ScoreTest extends TestCase
 
         $this->assertDatabaseCount('words', 1);
     }
+
+    /** @test */
+    public function it_should_return_all_scores_from_database() {
+        $wordCount = Word::factory(10)->create()->count();
+        $this->get("api/v2/scores")->assertSuccessful();
+
+        $this->assertDatabaseCount('words', $wordCount);
+    }
 }
