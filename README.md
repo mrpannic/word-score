@@ -27,6 +27,7 @@ This project should return score based on the word that has been passed to the e
     docker exec app php artisan passport:install
 ```
 For detailed usage of `laravel/passport` you can take a look at the official laravel [documentation](https://laravel.com/docs/10.x/passport#clients-json-api)
+
 5. (optional) If you are like me and you want to tinker a bit with the system and set everyting up by yourself you could use `laravel/valet` package.
 You will be needing `homebrew`, `php@8.1`, `composer` and `mysql`. Here is the official [documentation](https://laravel.com/docs/10.x/valet#installation)
 
